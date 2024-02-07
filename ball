@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ball Animation</title>
+  <style>
+    .ball {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+    }
+    #ball1 {
+      background-color: blue;
+    }
+    #ball2 {
+      background-color: red;
+    }
+    #ball3 {
+      background-color: green;
+    }
+    #ball4 {
+      background-color: yellow;
+    }
+    #ball5 {
+       background-color: orange;
+    }
+    #ball6 {
+      background-color: cyan;
+    }
+  </style>
+</head>
+<body>
+  <div id="ball1" class="ball"></div>
+  <div id="ball2" class="ball"></div>
+  <div id="ball3" class="ball"></div>
+  <div id="ball4" class="ball"></div>
+  <div id="ball5" class="ball"></div>
+  <div id="ball6" class="ball"></div>
+
+  <script>
+    const balls = document.querySelectorAll('.ball');
+	
+    const ballData = [];
+    balls.forEach(() => {
+      ballData.push({
+        x: Math.floor(Math.random() * 2501),
+        y: Math.floor(Math.random() * 50) + 10, // Random y-axis spawn with slight variation
+        dx: 6,
+        dy: 6,
+        gravity: 0.2,
+        mass: 5,
+        restitution: 1.0
+      });
+    });
+
+    function animate() {
+      ballData.forEach((ball, index) => {
+        ball.dy += ball.gravity;
+        ball.x += ball.dx;
+        ball.y += ball.dy;
+
+        // Check for collision with boundaries
+        if (ball.x >= 2500 || ball.x <= 0) {
+          ball.dx = -ball.dx * ball.restitution;
+        }
+        if (ball.y >= 1200 || ball.y <= 0) {
+          ball.dy = -ball.dy * ball.restitution;
+        }
+
+        // Check for collision with other balls
+        ballData.forEach((otherBall, otherIndex) => {
+          if (index !== otherIndex) {
+            const dx = ball.x - otherBall.x;
+            const dy = ball.y - otherBall.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < 50) { // Assuming all balls have a radius of 25px
+              // Swap velocities (simple collision handling)
+              const tempDx = ball.dx;
+              const tempDy = ball.dy;
+              ball.dx = otherBall.dx;
+              ball.dy = otherBall.dy;
+              otherBall.dx = tempDx;
+              otherBall.dy = tempDy;
+            }
+          }
+        });
+
+        balls[index].style.left = ball.x + 'px';
+        balls[index].style.top = ball.y + 'px';
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
